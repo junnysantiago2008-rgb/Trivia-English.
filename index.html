@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trivia English - Ruleta Desafío Total</title>
+    <style>
+        *{box-sizing:border-box}
+        body{margin:0;font-family:Inter,Arial,sans-serif;background:linear-gradient(135deg,#020617,#0f172a,#1e1b4b);min-height:100vh;color:#f1f5f9;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:16px}
+        button,select,input{font:inherit}
+        button{cursor:pointer}
+        .header,.card{width:100%;max-width:600px}
+        .header{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:#0f172acc;border:1px solid #1e293b;border-radius:16px;box-shadow:0 10px 30px #0008}
+        .brand{display:flex;align-items:center;gap:10px}.logo{background:linear-gradient(45deg,#f43f5e,#f59e0b);padding:9px;border-radius:12px;font-weight:900}
+        h1{font-size:20px;margin:0;background:linear-gradient(90deg,#fb7185,#f9a8d4,#fcd34d);-webkit-background-clip:text;color:transparent}
+        .controls{display:flex;gap:7px}.smallbtn,.select{background:#1e293b;color:#e2e8f0;border:1px solid #334155;padding:7px 10px;border-radius:11px;font-weight:700;font-size:12px}
+        main{width:100%;max-width:600px;margin:auto;padding:16px 0}.card{background:#0f172ae8;border:1px solid #1e293bcc;border-radius:24px;padding:24px;box-shadow:0 20px 60px #0008;position:relative;overflow:hidden}
+        .screen{display:flex;flex-direction:column;gap:16px}.hidden{display:none!important}.center{text-align:center;align-items:center}
+        .hero{width:96px;height:96px;border-radius:28px;display:flex;align-items:center;justify-content:center;font-size:48px;background:#f43f5e22;border:1px solid #fb718555;box-shadow:0 0 25px #f43f5e66}
+        h2,h3,h4,p{margin:0}h2{font-size:30px}h3{font-size:21px}p{color:#94a3b8;line-height:1.5}
+        .primary,.secondary,.mode{border-radius:16px;padding:14px;font-weight:800;border:1px solid #334155;color:white}
+        .primary{background:linear-gradient(90deg,#f43f5e,#db2777);box-shadow:0 8px 25px #e11d4833}.secondary{background:#1e293b}
+        .actions{display:flex;gap:10px}.actions>*{flex:1}
+        .mode{width:100%;background:#1e293bcc;text-align:left;display:flex;justify-content:space-between;align-items:center}
+        .mode:hover{border-color:#fb7185}.mode h4{font-size:15px}.mode p{font-size:12px;margin-top:4px}
+        .toprow{display:flex;justify-content:space-between;align-items:center;color:#94a3b8;font-size:12px;font-weight:800}
+        .wheel{width:210px;height:210px;border-radius:50%;border:4px solid #f59e0b99;background:conic-gradient(#1e293b 0 16.6%,#312e81 16.6% 33.2%,#1e293b 33.2% 49.8%,#312e81 49.8% 66.4%,#1e293b 66.4% 83%,#312e81 83%);display:flex;align-items:center;justify-content:center;box-shadow:0 15px 40px #0009;position:relative}
+        .wheel:after{content:"";position:absolute;inset:12px;border:1px solid #475569;border-radius:50%}
+        .wheel.spin{animation:spin 1.5s cubic-bezier(.15,.85,.35,1) forwards}@keyframes spin{to{transform:rotate(1440deg)}}
+        .wheelin{z-index:1;text-align:center}.wheelin div{font-size:35px}.wheelin span{color:#fbbf24;font-size:12px;font-weight:900}
+        .pointer{width:20px;height:20px;background:#f43f5e;transform:rotate(45deg);position:absolute;top:-8px;border:2px solid #0f172a;border-radius:4px}
+        .panel{background:#1e293b88;border:1px solid #334155aa;padding:15px;border-radius:16px}
+        .badge{background:#f43f5e22;color:#fb7185;border:1px solid #f43f5e55;border-radius:99px;padding:5px 9px;font-size:11px}
+        .hint{background:#f59e0b22;color:#fcd34d;border:1px solid #f59e0b66;border-radius:11px;padding:7px 10px;font-size:12px;font-weight:800}
+        .question{font-size:20px;line-height:1.5}.options{display:flex;flex-direction:column;gap:10px}
+        .option{width:100%;text-align:left;background:#1e293bbb;color:#e2e8f0;border:1px solid #334155;padding:15px;border-radius:15px;font-weight:700;display:flex;justify-content:space-between}
+        .option.correct{background:#05966966;border-color:#10b981;color:#d1fae5}.option.wrong{background:#dc262666;border-color:#ef4444;color:#fee2e2}
+        .stats{display:flex;justify-content:space-around;text-align:center}.stats b{font-size:21px}.muted{font-size:12px;color:#94a3b8}
+        .good{color:#34d399}.bad{color:#f87171}.gold{color:#fbbf24}
+        .modal{position:fixed;inset:0;background:#020617cc;backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:16px;z-index:20}
+        .modalbox{background:#0f172a;border:1px solid #1e293b;border-radius:22px;padding:22px;width:100%;max-width:420px}
+        .profilegrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}.profileitem{background:#1e293b66;border:1px solid #1e293b;padding:14px;border-radius:15px;text-align:center}
+        input{background:#334155;color:white;border:1px solid #475569;border-radius:10px;padding:7px;width:130px;text-align:right}
+        footer{width:100%;max-width:600px;color:#64748b;font-size:11px;display:flex;justify-content:space-between;gap:8px}
+        @media(max-width:500px){h2{font-size:25px}.card{padding:20px}.actions{flex-direction:column}.wheel{width:190px;height:190px}}
+    </style>
+</head>
+<body>
+<header class="header">
+    <div class="brand"><div class="logo">🎡</div><h1>Trivia English</h1></div>
+    <div class="controls">
+        <button class="smallbtn" onclick="toggleAudio()" id="audioBtn">🔇 Silencio</button>
+        <select class="select" id="langSelect" onchange="changeLanguage(this.value)"><option value="es">🇪🇸 ES</option><option value="en">🇬🇧 EN</option></select>
+    </div>
+</header>
+
+<main><div class="card">
+    <section id="startScreen" class="screen center">
+        <div class="hero">🎯</div><h2 id="welcomeTitle">¡Ruleta Gramatical!</h2>
+        <p id="welcomeDesc">Pon a prueba tus conocimientos de inglés con la ruleta y elige tu modo de juego.</p>
+        <div class="actions" style="width:100%;margin-top:10px"><button class="primary" onclick="showModeSelect()" id="startBtn">¡Comenzar!</button><button class="secondary" onclick="openProfileModal()" id="profileBtn">👤 Perfil</button></div>
+    </section>
+
+    <section id="modeScreen" class="screen hidden">
+        <div class="toprow"><button class="smallbtn" onclick="backToStart()">← Menú</button><b id="modeTitle">ELIGE TU MODO</b><span></span></div>
+        <button class="mode" onclick="selectGameMode('normal')"><div><h4 id="normalLabel">MODO NORMAL (15 Preguntas)</h4><p id="normalDesc">Gira la ruleta 15 veces. ¡Acerta más de 9 para ganar!</p></div><span>🏆</span></button>
+        <button class="mode" onclick="selectGameMode('time')"><div><h4 id="timeLabel">CONTRARRELOJ (60 Segundos)</h4><p id="timeDesc">Responde tantas como puedas antes de que el tiempo acabe.</p></div><span>⚡</span></button>
+        <button class="mode" onclick="selectGameMode('survival')"><div><h4 id="survivalLabel">MODO SIN FIN (Supervivencia)</h4><p id="survivalDesc">El juego termina si fallas una sola respuesta.</p></div><span>❤️</span></button>
+    </section>
+
+    <section id="wheelScreen" class="screen center hidden">
+        <div class="toprow" style="width:100%"><button class="smallbtn" onclick="showModeSelect()">← Modos</button><span id="roundCounter">Pregunta 1 / 15</span><span></span></div>
+        <div class="wheel" id="wheel"><div class="wheelin"><div>🎡</div><span id="wheelText">¡GIRA!</span></div><div class="pointer"></div></div>
+        <div><h3 id="spinTitle">¡Gira la ruleta para elegir tema!</h3><p id="spinDesc">El destino decidirá tu siguiente categoría.</p></div>
+        <button class="primary" onclick="spinWheel()" id="spinBtn">¡Girar Ruleta!</button>
+    </section>
+
+    <section id="questionScreen" class="screen hidden">
+        <div class="toprow panel"><span id="qInfo">Pregunta</span><span class="badge" id="category">Categoría</span><button class="hint" onclick="useHint()" id="hintBtn">💡 Pista (-25 🪙)</button></div>
+        <div id="timerContainer" class="hidden" style="height:8px;background:#1e293b;border-radius:9px;overflow:hidden"><div id="timerBar" style="height:100%;width:100%;background:linear-gradient(90deg,#f59e0b,#f43f5e)"></div></div>
+        <h3 class="question" id="questionText">Pregunta</h3><div class="options" id="options"></div>
+    </section>
+
+    <section id="resultScreen" class="screen center hidden">
+        <div id="resultIcon" class="hero">🎉</div><h2 id="resultTitle">¡Correcto!</h2><p id="resultFeedback">¡Excelente respuesta!</p>
+        <div class="panel stats"><div><span class="muted">Puntos</span><br><b id="scoreDisplay">0</b></div><div><span class="muted">Racha</span><br><b class="gold" id="streakDisplay">🔥 0</b></div></div>
+        <button class="primary" onclick="nextAfterResult()" id="continueBtn">Continuar</button>
+    </section>
+
+    <section id="gameOverScreen" class="screen center hidden">
+        <div class="hero">🏆</div><h2 id="finalTitle">Puntuación Final</h2><p id="finalSubtitle">¡Excelente trabajo completando el desafío!</p>
+        <div class="panel" style="width:100%;display:flex;flex-direction:column;gap:10px">
+            <div id="statusRow" class="toprow"><span>Resultado:</span><b id="statusValue" class="good">¡VICTORIA!</b></div>
+            <div class="toprow"><span>Puntuación Total:</span><b id="finalScore" class="gold">0</b></div>
+            <div class="toprow"><span>XP Ganada:</span><b id="finalXp">+0 XP</b></div>
+            <div class="toprow"><span>Monedas:</span><b id="finalCoins" class="gold">+0 🪙</b></div>
+        </div>
+        <button class="primary" onclick="returnToMenu()" id="restartBtn">Volver al Inicio</button>
+    </section>
+</div></main>
+
+<div id="profileModal" class="modal hidden"><div class="modalbox">
+    <div class="toprow"><h3>👤 Perfil del Jugador</h3><button class="smallbtn" onclick="closeProfileModal()">✕</button></div>
+    <div class="panel" style="margin-top:15px"><div class="toprow"><span>Nombre:</span><input id="playerName" value="Estudiante" onchange="updateName(this.value)"></div><div class="toprow" style="margin-top:10px"><b id="levelLabel">Nivel 1</b><span><span id="xpVal">0</span> / 100 XP</span></div><div style="height:7px;background:#334155;border-radius:9px;margin-top:6px"><div id="xpBar" style="height:100%;width:0;background:#fbbf24;border-radius:9px"></div></div></div>
+    <div class="profilegrid"><div class="profileitem">🪙<br><span class="muted">Monedas</span><br><b id="coinsVal">150</b></div><div class="profileitem">🏆<br><span class="muted">Victorias</span><br><b id="winsVal">0</b></div><div class="profileitem">🔥<br><span class="muted">Mejor Racha</span><br><b id="bestVal">0</b></div><div class="profileitem">⭐<br><span class="muted">Puntuación</span><br><b id="highVal">0</b></div></div>
+</div></div>
+
+<div id="alertModal" class="modal hidden"><div class="modalbox" style="max-width:340px;text-align:center"><div id="alertIcon" style="font-size:35px">⚠️</div><p id="alertText" style="margin:10px 0 15px;color:#e2e8f0"></p><button class="primary" onclick="closeAlert()">OK</button></div></div>
+
+<footer><span>🎵 Audio local</span><span>Trivia English © 2026 • Santiago López</span></footer>
+
+<script>
+const T={
+es:{welcome:"¡Ruleta Gramatical!",desc:"Pon a prueba tus conocimientos de inglés con la ruleta y elige tu modo de juego.",start:"¡Comenzar!",profile:"👤 Perfil",modes:"ELIGE TU MODO DE JUEGO",normal:"MODO NORMAL (15 Preguntas)",normalD:"Gira la ruleta 15 veces. ¡Acerta más de 9 para ganar!",time:"CONTRARRELOJ (60 Segundos)",timeD:"Preguntas infinitas. Responde tantas como puedas antes de que el tiempo acabe.",survival:"MODO SIN FIN (Supervivencia)",survivalD:"Preguntas infinitas. El juego termina si fallas una sola respuesta.",spin:"¡Gira la ruleta para elegir tema!",spinD:"El destino decidirá tu siguiente categoría.",spinBtn:"¡Girar Ruleta!",continue:"Continuar",final:"Puntuación Final",finalD:"¡Excelente trabajo completando el desafío!",restart:"Volver al Inicio",hint:"💡 Pista (-25 🪙)",noCoins:"¡No tienes suficientes monedas!",correct:"¡Correcto!",incorrect:"¡Incorrecto!",categories:{simplePresent:"Presente Simple",presentContinuous:"Presente Continuo",simplePast:"Pasado Simple",regularVerbs:"Verbos Regulares",adverbs:"Adverbios de Frecuencia",tobe:"Verbo To Be"}},
+en:{welcome:"Grammar Wheel Challenge!",desc:"Test your English skills with the wheel and choose your game mode.",start:"Start!",profile:"👤 Profile",modes:"CHOOSE YOUR GAME MODE",normal:"NORMAL MODE (15 Questions)",normalD:"Spin the wheel 15 times. Get more than 9 correct to win!",time:"TIME ATTACK (60 Seconds)",timeD:"Infinite questions. Answer as many as you can before time runs out.",survival:"ENDLESS MODE (Survival)",survivalD:"Infinite questions. The game ends if you miss a single answer.",spin:"Spin the wheel to pick a topic!",spinD:"Fate will decide your category.",spinBtn:"Spin Wheel!",continue:"Continue",final:"Final Score",finalD:"Great job completing the challenge!",restart:"Back to Home",hint:"💡 Hint (-25 🪙)",noCoins:"You don't have enough coins!",correct:"Correct!",incorrect:"Incorrect!",categories:{simplePresent:"Simple Present",presentContinuous:"Present Continuous",simplePast:"Simple Past",regularVerbs:"Regular Verbs",adverbs:"Adverbs of Frequency",tobe:"Verb To Be"}}
+};
+
+const bank={
+simplePresent:[
+{q_es:"¿Cuál es la forma correcta del verbo para la tercera persona singular (he/she/it) en presente simple?",q_en:"What is the correct verb form for the third-person singular (he/she/it) in simple present?",o:["She work every day","She works every day","She working every day","She worked every day"],c:1,h_es:"Se le añade una 's' al final del verbo principal.",h_en:"An 's' is added to the end of the main verb."},
+{q_es:"Completa la oración negativa: 'They _____ like eating vegetables.'",q_en:"Complete the negative sentence: 'They _____ like eating vegetables.'",o:["don't","doesn't","aren't","isn't"],c:0,h_es:"Para 'They' se utiliza 'don't'.",h_en:"For 'They', use 'don't'."}],
+presentContinuous:[
+{q_es:"¿Cuál es la estructura correcta para el Presente Continuo?",q_en:"What is the correct structure for the Present Continuous?",o:["Sujeto + Verbo to be + Verbo con -ing","Sujeto + Verbo en pasado","Sujeto + Do/Does + Verbo","Sujeto + Will + Verbo"],c:0,h_es:"Usa am/is/are y la terminación -ing.",h_en:"Use am/is/are and the -ing ending."},
+{q_es:"Selecciona la oración correcta en presente continuo:",q_en:"Select the correct sentence in present continuous:",o:["He is reading a book now","He reads a book now","He reading a book now","He is read a book now"],c:0,h_es:"Debe incluir 'is' y el verbo con 'ing'.",h_en:"It must include 'is' and the verb with 'ing'."}],
+simplePast:[
+{q_es:"¿Cuál es la forma en pasado simple del verbo 'go'?",q_en:"What is the simple past form of 'go'?",o:["goed","gone","went","going"],c:2,h_es:"Es un verbo irregular muy común.",h_en:"It is a common irregular verb."},
+{q_es:"Completa: 'She _____ to Paris last year.'",q_en:"Complete: 'She _____ to Paris last year.'",o:["travel","travels","traveled","traveling"],c:2,h_es:"Es un verbo regular, se añade '-ed'.",h_en:"It is regular, so add '-ed'."}],
+regularVerbs:[
+{q_es:"¿Cómo se forma generalmente el pasado simple de un verbo regular?",q_en:"How is the simple past of a regular verb generally formed?",o:["Añadiendo '-ing'","Añadiendo '-ed'","Cambiando toda la palabra","Añadiendo '-s'"],c:1,h_es:"Ejemplo: play se convierte en played.",h_en:"Example: play becomes played."},
+{q_es:"Identifica cuál es REGULAR en pasado:",q_en:"Which verb is REGULAR in the past?",o:["ate","watched","ran","saw"],c:1,h_es:"Termina en '-ed'.",h_en:"It ends in '-ed'."}],
+adverbs:[
+{q_es:"¿Cuál es la posición correcta de 'always' con el verbo 'to be'?",q_en:"What is the correct position of 'always' with 'to be'?",o:["She always is happy","She is always happy","Always she is happy","She is happy always"],c:1,h_es:"El adverbio va después de am/is/are.",h_en:"The adverb goes after am/is/are."},
+{q_es:"¿Cómo se traduce 'nunca' al inglés?",q_en:"How do you translate 'nunca' to English?",o:["Always","Sometimes","Never","Usually"],c:2,h_es:"Representa 0% de frecuencia.",h_en:"It represents 0% frequency."}],
+tobe:[
+{q_es:"¿Cuál es la forma correcta del verbo to be para 'He'?",q_en:"What is the correct form of to be for 'He'?",o:["am","is","are","be"],c:1,h_es:"Tercera persona singular.",h_en:"Third person singular."},
+{q_es:"Traduce al inglés: 'Nosotros somos estudiantes.'",q_en:"Translate: 'We are students.'",o:["We is students","We am students","We are students","We be students"],c:2,h_es:"We usa 'are'.",h_en:"We uses 'are'."}]
+};
+
+let lang='es',mode='normal',round=1,total=15,correct=0,score=0,streak=0,sessionXp=0,sessionCoins=0,current=null,isSpinning=false,timer=null,audio=false,audioCtx=null;
+let profile=JSON.parse(localStorage.getItem('trivia_english_profile')||'null')||{name:"Estudiante",level:1,xp:0,coins:150,wins:0,bestStreak:0,highScore:0};
+
+const $=id=>document.getElementById(id);
+function save(){localStorage.setItem('trivia_english_profile',JSON.stringify(profile))}
+function updateProfile(){ $('playerName').value=profile.name;$('levelLabel').textContent=(lang==='es'?'Nivel ':'Level ')+profile.level;$('xpVal').textContent=profile.xp;$('coinsVal').textContent=profile.coins;$('winsVal').textContent=profile.wins;$('bestVal').textContent=profile.bestStreak;$('highVal').textContent=profile.highScore;$('xpBar').style.width=Math.min(100,profile.xp/(profile.level*100)*100)+'%';save()}
+function changeLanguage(l){lang=l;let t=T[l];$('welcomeTitle').textContent=t.welcome;$('welcomeDesc').textContent=t.desc;$('startBtn').textContent=t.start;$('profileBtn').textContent=t.profile;$('modeTitle').textContent=t.modes;$('normalLabel').textContent=t.normal;$('normalDesc').textContent=t.normalD;$('timeLabel').textContent=t.time;$('timeDesc').textContent=t.timeD;$('survivalLabel').textContent=t.survival;$('survivalDesc').textContent=t.survivalD;$('spinTitle').textContent=t.spin;$('spinDesc').textContent=t.spinD;$('spinBtn').textContent=t.spinBtn;$('continueBtn').textContent=t.continue;$('finalTitle').textContent=t.final;$('finalSubtitle').textContent=t.finalD;$('restartBtn').textContent=t.restart;$('hintBtn').textContent=t.hint;updateProfile();updateRound()}
+function hideAll(){['startScreen','modeScreen','wheelScreen','questionScreen','resultScreen','gameOverScreen'].forEach(id=>$(id).classList.add('hidden'))}
+function showModeSelect(){hideAll();$('modeScreen').classList.remove('hidden')}
+function backToStart(){hideAll();$('startScreen').classList.remove('hidden')}
+function selectGameMode(m){mode=m;round=1;correct=0;score=0;streak=0;sessionXp=0;sessionCoins=0;clearInterval(timer);hideAll();$('wheelScreen').classList.remove('hidden');$('timerContainer').classList.add('hidden');updateRound()}
+function updateRound(){$('roundCounter').textContent=(lang==='es'?'Pregunta ':'Question ')+(mode==='normal'?round+' / '+total:'#'+round);$('wheelText').textContent=lang==='es'?'¡GIRA!':'SPIN!'}
+function spinWheel(){
+ if(isSpinning)return;isSpinning=true;$('spinBtn').disabled=true;let w=$('wheel');w.classList.remove('spin');void w.offsetWidth;w.classList.add('spin');
+ let cats=Object.keys(bank),cat=cats[Math.floor(Math.random()*cats.length)],i=0;let interval=setInterval(()=>{$('wheelText').textContent=T[lang].categories[cats[i++%cats.length]]},100);
+ setTimeout(()=>{clearInterval(interval);$('wheelText').textContent=T[lang].categories[cat];isSpinning=false;$('spinBtn').disabled=false;setTimeout(()=>loadQuestion(cat),700)},1500)
+}
+function loadQuestion(cat){
+ current=bank[cat][Math.floor(Math.random()*bank[cat].length)];hideAll();$('questionScreen').classList.remove('hidden');$('category').textContent=T[lang].categories[cat];$('qInfo').textContent=(lang==='es'?'Pregunta ':'Question ')+(mode==='normal'?round+'/'+total:'#'+round);$('questionText').textContent=lang==='es'?current.q_es:current.q_en;
+ let opts=current.o.map((text,index)=>({text,index})).sort(()=>Math.random()-.5),box=$('options');box.innerHTML='';
+ opts.forEach(x=>{let b=document.createElement('button');b.className='option';b.dataset.index=x.index;b.innerHTML='<span>'+x.text+'</span><span>👉</span>';b.onclick=()=>answer(x.index===current.c,b);box.appendChild(b)})
+ if(mode==='time'){$('timerContainer').classList.remove('hidden');startQuestionTimer()}else $('timerContainer').classList.add('hidden')
+}
+function startQuestionTimer(){clearInterval(timer);let left=100; $('timerBar').style.width='100%';timer=setInterval(()=>{left-=2.5;$('timerBar').style.width=Math.max(0,left)+'%';if(left<=0){clearInterval(timer);answer(false,null)}},100)}
+function answer(ok,chosen){
+ clearInterval(timer);let bs=[...$('options').children];bs.forEach(b=>{b.disabled=true;if(+b.dataset.index===current.c)b.classList.add('correct')});if(chosen&&!ok)chosen.classList.add('wrong');
+ if(ok){correct++;score+=100+streak*15;streak++;if(streak>profile.bestStreak)profile.bestStreak=streak;sessionXp+=25;sessionCoins+=10}
+ else streak=0;
+ setTimeout(()=>{if(mode==='survival'&&!ok)return endGame();if(mode==='normal'){if(round>=total)return endGame();showResult(ok)}else{round++;hideAll();$('wheelScreen').classList.remove('hidden');updateRound()}},mode==='normal'?1200:900)
+}
+function showResult(ok){hideAll();$('resultScreen').classList.remove('hidden');$('resultIcon').textContent=ok?'🎉':'❌';$('resultTitle').textContent=ok?T[lang].correct:T[lang].incorrect;$('resultTitle').className=ok?'good':'';$('resultFeedback').textContent=ok?(lang==='es'?'¡Excelente respuesta!':'Great answer!'):(lang==='es'?'Revisa la respuesta correcta y sigue adelante.':'Check the correct answer and keep going.');$('scoreDisplay').textContent=score;$('streakDisplay').textContent='🔥 '+streak}
+function nextAfterResult(){round++;hideAll();$('wheelScreen').classList.remove('hidden');updateRound()}
+function useHint(){if(!current)return;if(profile.coins<25){showAlert(T[lang].noCoins,'🪙');return}profile.coins-=25;updateProfile();showAlert(lang==='es'?current.h_es:current.h_en,'💡')}
+function endGame(){clearInterval(timer);hideAll();$('gameOverScreen').classList.remove('hidden');profile.xp+=sessionXp;profile.coins+=sessionCoins;if(score>profile.highScore)profile.highScore=score;let victory=mode==='normal'?correct>9:true;if(victory)profile.wins++;if(profile.xp>=profile.level*100){profile.xp-=profile.level*100;profile.level++}updateProfile();$('statusRow').classList.toggle('hidden',mode!=='normal');$('statusValue').textContent=mode==='normal'?(victory?'¡VICTORIA! ':'DERROTA ')+`(${correct}/15)`:'SUPERADO';$('statusValue').className=victory?'good':'bad';$('finalScore').textContent=score;$('finalXp').textContent='+'+sessionXp+' XP';$('finalCoins').textContent='+'+sessionCoins+' 🪙'}
+function returnToMenu(){clearInterval(timer);backToStart()}
+function openProfileModal(){updateProfile();$('profileModal').classList.remove('hidden')}
+function closeProfileModal(){$('profileModal').classList.add('hidden')}
+function updateName(n){if(n.trim()){profile.name=n.trim();save()}}
+function showAlert(msg,icon){$('alertIcon').textContent=icon;$('alertText').textContent=msg;$('alertModal').classList.remove('hidden')}
+function closeAlert(){$('alertModal').classList.add('hidden')}
+function toggleAudio(){audio=!audio;$('audioBtn').textContent=audio?'🔊 Música':'🔇 Silencio';if(audio){try{audioCtx=audioCtx||new(window.AudioContext||window.webkitAudioContext)()}catch(e){}}}
+window.onload=()=>{changeLanguage('es')}
+</script>
+</body>
+</html>
